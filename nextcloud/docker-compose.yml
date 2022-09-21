@@ -2,7 +2,7 @@ version: '3'
 
 services:
   db:
-    image: mariadb:10.7.3
+    image: mariadb:10.7
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: unless-stopped
     volumes:
@@ -21,7 +21,7 @@ services:
         nextcloud:
 
   app:
-    image: nextcloud:latest
+    build: ./
     restart: unless-stopped
     volumes:
       - nextcloud:/var/www/html
@@ -53,7 +53,7 @@ services:
       - redis
 
   crowdsec:
-    image: crowdsecurity/crowdsec:v1.3.2-debian
+    image: crowdsecurity/crowdsec:latest-debian
     restart: unless-stopped
     volumes:
       - /var/log/auth.log:/var/log/auth.log:ro
@@ -72,7 +72,7 @@ services:
       crowdsec:
 
   openresty:
-    image: crowdsecurity/openresty:v0.1.7
+    image: crowdsecurity/openresty:latest
     restart: unless-stopped
     volumes:
       - logs:/var/log/
@@ -82,8 +82,6 @@ services:
       - ./certbot/conf/:/etc/nginx/ssl/:ro
     env_file:
       - .env
-    environment:
-      server_name: "${HOSTNAME}"
     depends_on:
      - app
      - db
